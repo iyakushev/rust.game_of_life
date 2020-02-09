@@ -5,8 +5,8 @@ use std::fs;
 
 #[derive(Debug)]
 pub enum STATUS {
-    ALIVE,
-    DEAD,
+    ALIVE = 49,
+    DEAD  = 48,
 }
 
 #[repr(C)]
