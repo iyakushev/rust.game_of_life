@@ -29,13 +29,15 @@ impl GAMEFIELD {
         let prev_gen = self.cells.clone(); // Snapshot of the current generation
         let mut next_gen: HashSet<CELL> = HashSet::new();
         for mut cell in self.cells.drain() {
-            cell.check_neighbours(&prev_gen);
+            for c in cell.check(&prev_gen, None).drain(..) {
+                next_gen.insert(c);
+            }
             match cell.get_status() {
                 STATUS::ALIVE => next_gen.insert(cell),
                 STATUS::DEAD  => false,
             };
         }
-        
+        self.cells = next_gen;
     }
 
     pub fn scavenge_dead_cells(&mut self) {
