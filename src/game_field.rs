@@ -1,25 +1,41 @@
 pub use crate::cell::{CELL, STATUS};
+use std::collections::HashSet;
+use std::string::String;
 use std::io::Read;
 use std::fs;
 
+
 #[derive(Debug)]
 pub struct GAMEFIELD {
-    cells: Vec<CELL>,
-    size_w: i32,
-    size_h: i32
+    pub cells: HashSet<CELL>
 }
 
 impl GAMEFIELD {
     pub fn new() -> Self {
         GAMEFIELD {
-            cells: vec![CELL::new(STATUS::DEAD,0,0)],
-            size_w:0,
-            size_h:0
+            cells: HashSet::new()
         }
     }
 
-    pub fn get_cells(&self) -> &Vec<CELL> {
+    // pub fn get_cells(&self) -> &Vec<CELL> {                  |___|_X_|_X_|___|___|___|
+    //     &self.cells.into_iter().collect::<Vec<_>>()          |___|___|_X_|___|_X_|___|
+    // }                                                        |___|___|_X_|___|___|_X_|
+
+    pub fn get_cells(&self) -> &HashSet<CELL> {
         &self.cells
+    }
+
+    pub fn next_generation(&mut self) {
+        let prev_gen = self.cells.clone(); // Snapshot of the current generation
+        let mut next_gen: HashSet<CELL> = HashSet::new();
+        for mut cell in self.cells.drain() {
+            cell.check_neighbours(&prev_gen);
+            match cell.get_status() {
+                STATUS::ALIVE => next_gen.insert(cell),
+                STATUS::DEAD  => false,
+            };
+        }
+        
     }
 
     pub fn scavenge_dead_cells(&mut self) {
@@ -33,10 +49,10 @@ impl GAMEFIELD {
 
         for byte in f.bytes() {
             match byte.unwrap() {
-                10 => pos_y += 1,
-                48 => pos_x += 1, // Does not store dead cells
+                10 => {pos_y += 1; pos_x = 0}, // New line
+                48 => pos_x += 1,              // Does not store dead cells
                 49 => {
-                    self.cells.push(CELL::new(STATUS::ALIVE, pos_x, pos_y));
+                    self.cells.insert(CELL::new(STATUS::ALIVE, pos_x, pos_y));
                     pos_x += 1
                 },
                 _ => {
