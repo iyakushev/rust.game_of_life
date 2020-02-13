@@ -40,52 +40,47 @@ impl CELL {
     }
 
 
-    pub fn check(&mut self, cells: &HashSet<Self>, child: Option<bool>) -> Vec<CELL> {
+    pub fn check(&mut self, cells: &HashSet<Self>, is_child: bool) -> Vec<CELL> {
         let mut cx: u8 = 0;
         let mut new_cells = Vec::new();
         let start = self.get_min_pos();
-        
 
-        for x in start.0..=self.pos_x+1 {
-            for y in start.1..=self.pos_y+1 {
+        for y in start.1..=self.pos_y+1 {
+            for x in start.0..=self.pos_x+1 {
+                if self.get_pos() == (x, y) {
+                    continue;
+                }
                 let mut cell = CELL::new(STATUS::ALIVE, x, y);
                 if cells.contains(&cell) {
                     cx += 1;
                 } 
-                else {
-                    match child {
-                        Some(_) => (),
-                        None => {
-                            cell.check(cells, Some(true));
+                else { // If cell is dead.
+                    match is_child {
+                        true => (),
+                        false => {
+                            cell.check(cells, true);
                             match cell.get_status() {
                                 STATUS::ALIVE => new_cells.push(cell),
-                                STATUS::DEAD  => (),
+                                STATUS::DEAD  => ()
                             }
                         }
                     }
                 }
             }
         }
-
         match cx {
             0|1 => self.kill(),
-            2|3 => (),
+            2 => if is_child {
+                self.kill();
+            },
+            3 => (),
             _   => self.kill()
         }
-
         new_cells
     }
 
     pub fn get_pos(&self) -> (u64,u64) {
         (self.pos_x, self.pos_y)
-    }
-
-    pub fn set_x(&mut self, x: u64) {
-        self.pos_x = x;
-    }
-
-    pub fn set_y(&mut self, y: u64) {
-        self.pos_y = y;
     }
 
     pub fn get_x(&self) -> u64 {

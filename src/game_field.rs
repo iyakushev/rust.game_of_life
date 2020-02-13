@@ -25,11 +25,13 @@ impl GAMEFIELD {
         &self.cells
     }
 
+    // TODO add custom game rule cb to the interface. -> (Renderer, CELL::check?)
+    /// Main game rule.
     pub fn next_generation(&mut self) {
         let prev_gen = self.cells.clone(); // Snapshot of the current generation
         let mut next_gen: HashSet<CELL> = HashSet::new();
         for mut cell in self.cells.drain() {
-            for c in cell.check(&prev_gen, None).drain(..) {
+            for c in cell.check(&prev_gen, false).drain(..) {
                 next_gen.insert(c);
             }
             match cell.get_status() {

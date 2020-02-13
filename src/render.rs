@@ -5,6 +5,8 @@ use crate::game_field::GAMEFIELD;
 use std::string::String;
 
 // TODO address perfomance on a huge set.
+// TODO Scaling
+// TODO centered
 pub fn play(filename: String, cell_size: u64, dimensions: [u32; 2]) -> std::io::Result<()> {
     let mut gf = GAMEFIELD::new();
     gf.read_file(filename)?;
@@ -22,7 +24,7 @@ pub fn play(filename: String, cell_size: u64, dimensions: [u32; 2]) -> std::io::
         window.draw_2d(&event, |context, graphics, _device| {
             clear([1.0; 4], graphics);
             for cell in gf.get_cells() {
-                rectangle([1.0, 0.0, 0.0, 1.0], // red
+                rectangle([0.0, 0.0, 0.0, 1.0],
                           [cell.get_x() as f64, 
                            cell.get_y() as f64, 
                            cell_size as f64, 
@@ -31,7 +33,7 @@ pub fn play(filename: String, cell_size: u64, dimensions: [u32; 2]) -> std::io::
                            graphics);
             }
         });
-        gf.next_generation();
+        // gf.next_generation();
     }
     Ok(())
 }
