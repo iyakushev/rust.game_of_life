@@ -4,22 +4,21 @@ use std::string::String;
 use std::io::Read;
 use std::fs;
 
-
 #[derive(Debug)]
 pub struct GAMEFIELD {
-    pub cells: HashSet<CELL>
+    cells: HashSet<CELL>,
+    width: u32,
+    height: u32
 }
 
 impl GAMEFIELD {
-    pub fn new() -> Self {
+    pub fn new(dimensions: [u32;2]) -> Self {
         GAMEFIELD {
-            cells: HashSet::new()
+            cells: HashSet::new(),
+            width: dimensions[0],
+            height: dimensions[1]
         }
     }
-
-    // pub fn get_cells(&self) -> &Vec<CELL> {                  |___|_X_|_X_|___|___|___|
-    //     &self.cells.into_iter().collect::<Vec<_>>()          |___|___|_X_|___|_X_|___|
-    // }                                                        |___|___|_X_|___|___|_X_|
 
     pub fn get_cells(&self) -> &HashSet<CELL> {
         &self.cells
@@ -31,7 +30,7 @@ impl GAMEFIELD {
         let prev_gen = self.cells.clone(); // Snapshot of the current generation
         let mut next_gen: HashSet<CELL> = HashSet::new();
         for mut cell in self.cells.drain() {
-            for c in cell.check(&prev_gen, false).drain(..) {
+            for c in cell.check(&prev_gen, (self.width, self.height), false).drain(..) {
                 next_gen.insert(c);
             }
             match cell.get_status() {

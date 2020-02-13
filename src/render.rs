@@ -8,7 +8,7 @@ use std::string::String;
 // TODO Scaling
 // TODO centered
 pub fn play(filename: String, cell_size: u64, dimensions: [u32; 2]) -> std::io::Result<()> {
-    let mut gf = GAMEFIELD::new();
+    let mut gf = GAMEFIELD::new(dimensions);
     gf.read_file(filename)?;
 
     let mut window: PistonWindow =
@@ -33,7 +33,7 @@ pub fn play(filename: String, cell_size: u64, dimensions: [u32; 2]) -> std::io::
                            graphics);
             }
         });
-        // gf.next_generation();
+        gf.next_generation();
     }
     Ok(())
 }

@@ -10,12 +10,16 @@ pub enum STATUS {
 #[derive(Copy,Clone,Hash,Eq,PartialEq,Debug)]
 pub struct CELL {
     status: STATUS,
-    pos_x: u64,
-    pos_y: u64
+    pos_x: u32,
+    pos_y: u32
+}
+
+pub trait Check {
+    fn check(&mut self, cells: &HashSet<CELL>, looped_borders: bool, is_child: bool) -> Vec<CELL>;
 }
 
 impl CELL {
-    pub fn new(status: STATUS, pos_x: u64, pos_y: u64) -> Self {
+    pub fn new(status: STATUS, pos_x: u32, pos_y: u32) -> Self {
         CELL {
             status: status,
             pos_x: pos_x,
@@ -27,30 +31,28 @@ impl CELL {
         self.status = STATUS::DEAD;
     }
 
-    fn get_min_pos(&self) -> (u64, u64) {
-        let mut x = self.pos_x;
-        let mut y = self.pos_y;
-        if self.pos_x != 0 {
-            x -= 1;
+    fn get_range(&self, position: u32, dimension: u32) -> [u32;3] {
+        if position == 0 {
+            [dimension, 0, 1]
         }
-        if self.pos_y != 0 {
-            y -= 1;
+        else if position == dimension {
+            [dimension-1, dimension, 0]
         }
-        (x, y)
+        else {
+            [position-1, position, position+1]
+        }
     }
 
-
-    pub fn check(&mut self, cells: &HashSet<Self>, is_child: bool) -> Vec<CELL> {
+    pub fn check(&mut self, cells: &HashSet<CELL>, dimensions: (u32, u32), is_child: bool) -> Vec<CELL> {
         let mut cx: u8 = 0;
         let mut new_cells = Vec::new();
-        let start = self.get_min_pos();
 
-        for y in start.1..=self.pos_y+1 {
-            for x in start.0..=self.pos_x+1 {
-                if self.get_pos() == (x, y) {
+        for y in self.get_range(self.pos_y, dimensions.1).iter() {
+            for x in self.get_range(self.pos_x, dimensions.0).iter() {
+                if self.get_pos() == (*x, *y) {
                     continue;
                 }
-                let mut cell = CELL::new(STATUS::ALIVE, x, y);
+                let mut cell = CELL::new(STATUS::ALIVE, *x, *y);
                 if cells.contains(&cell) {
                     cx += 1;
                 } 
@@ -58,7 +60,7 @@ impl CELL {
                     match is_child {
                         true => (),
                         false => {
-                            cell.check(cells, true);
+                            cell.check(cells, dimensions, true);
                             match cell.get_status() {
                                 STATUS::ALIVE => new_cells.push(cell),
                                 STATUS::DEAD  => ()
@@ -79,15 +81,15 @@ impl CELL {
         new_cells
     }
 
-    pub fn get_pos(&self) -> (u64,u64) {
+    pub fn get_pos(&self) -> (u32,u32) {
         (self.pos_x, self.pos_y)
     }
 
-    pub fn get_x(&self) -> u64 {
+    pub fn get_x(&self) -> u32 {
         self.pos_x
     }
 
-    pub fn get_y(&self) -> u64 {
+    pub fn get_y(&self) -> u32 {
         self.pos_y
     }
 
