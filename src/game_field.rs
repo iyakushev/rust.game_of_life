@@ -8,7 +8,9 @@ use std::fs;
 pub struct GAMEFIELD {
     cells: HashSet<CELL>,
     width: u32,
-    height: u32
+    height: u32,
+    c_width: u32,
+    c_height: u32
 }
 
 impl GAMEFIELD {
@@ -16,7 +18,9 @@ impl GAMEFIELD {
         GAMEFIELD {
             cells: HashSet::new(),
             width: dimensions[0],
-            height: dimensions[1]
+            height: dimensions[1],
+            c_width: dimensions[0]/2,
+            c_height: dimensions[1]/2
         }
     }
 
@@ -41,18 +45,18 @@ impl GAMEFIELD {
         self.cells = next_gen;
     }
 
-    pub fn scavenge_dead_cells(&mut self) {
-        self.cells.retain(|cell| *cell.get_status()==STATUS::ALIVE)
-    }
+    // pub fn scavenge_dead_cells(&mut self) {
+    //     self.cells.retain(|cell| *cell.get_status()==STATUS::ALIVE)
+    // }
 
     pub fn read_file(&mut self, filename: String) -> std::io::Result<()> {
         let f = fs::File::open(filename)?;
-        let mut pos_y = 0;
-        let mut pos_x = 0;
+        let mut pos_y = self.c_height;
+        let mut pos_x = self.c_width;
 
         for byte in f.bytes() {
             match byte.unwrap() {
-                10 => {pos_y += 1; pos_x = 0}, // New line
+                10 => {pos_y += 1; pos_x = self.c_width}, // New line
                 48 => pos_x += 1,              // Does not store dead cells
                 49 => {
                     self.cells.insert(CELL::new(STATUS::ALIVE, pos_x, pos_y));

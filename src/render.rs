@@ -2,14 +2,14 @@ extern crate piston_window;
 
 use piston_window::*;
 use crate::game_field::GAMEFIELD;
-use std::string::String;
+
 
 // TODO address perfomance on a huge set.
 // TODO Scaling
 // TODO centered
-pub fn play(filename: String, cell_size: u64, dimensions: [u32; 2]) -> std::io::Result<()> {
+pub fn play(filename: &str, cell_size: u64, dimensions: [u32; 2]) -> std::io::Result<()> {
     let mut gf = GAMEFIELD::new(dimensions);
-    gf.read_file(filename)?;
+    gf.read_file(filename.to_string())?;
 
     let mut window: PistonWindow =
         WindowSettings::new("RGOL", dimensions)
