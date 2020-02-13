@@ -4,12 +4,12 @@ use piston_window::*;
 use crate::game_field::GAMEFIELD;
 
 
-// TODO address perfomance on a huge set.
 // TODO Scaling
-// TODO centered
-pub fn play(filename: &str, cell_size: u64, dimensions: [u32; 2]) -> std::io::Result<()> {
+// TODO GGEZ port
+pub fn play(filename: &str, cell_size: u64, color: [f32;4], bg: [f32;4], dimensions: [u32; 2], rainbow: bool) -> std::io::Result<()> {
     let mut gf = GAMEFIELD::new(dimensions);
     gf.read_file(filename.to_string())?;
+    let mut run = false;
 
     let mut window: PistonWindow =
         WindowSettings::new("RGOL", dimensions)
@@ -17,23 +17,25 @@ pub fn play(filename: &str, cell_size: u64, dimensions: [u32; 2]) -> std::io::Re
     while let Some(event) = window.next() {
         if let Some(e) = event.press_args() {
             match e {
-                Button::Keyboard(Key::Q) => gf.next_generation(),
+                Button::Keyboard(Key::Space) => {if run {run = false} else {run = true}},
                 _ => ()
             }
         };
         window.draw_2d(&event, |context, graphics, _device| {
-            clear([1.0; 4], graphics);
+            clear(bg, graphics);
             for cell in gf.get_cells() {
-                rectangle([0.0, 0.0, 0.0, 1.0],
-                          [cell.get_x() as f64, 
-                           cell.get_y() as f64, 
-                           cell_size as f64, 
+                rectangle(color,
+                          [cell.get_x() as f64,
+                           cell.get_y() as f64,
+                           cell_size as f64,
                            cell_size as f64],
                            context.transform,
                            graphics);
             }
         });
-        gf.next_generation();
+        if run {
+            gf.next_generation();
+        }
     }
     Ok(())
 }

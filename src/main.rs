@@ -4,15 +4,45 @@ mod render;
 
 use clap::{Arg, App};
 use render::play;
+use phf::{phf_map};
+use piston_window::color::hex;
 
-const VERSION:    &str    = "v0.1";
+// --------------------==CONSTANTS==-------------------- \\
 // const RESOLUTION: [u32;2] = [320,240];
+const VERSION:    &str    = "v0.1";
 const CELL_SIZE:  u64     = 1;
+const COLOR: phf::Map<&'static str, [f32;4]> = phf_map!{
+        "black" => [0.0,0.0,0.0,1.0],
+        "red" => [1.0,0.0,0.0,1.0],
+        "blue" => [0.0,1.0,0.0,1.0],
+        "teal" => [0.0,0.5,0.5,1.0],
+        "white" => [1.0; 4]
+};
 
+fn parse_color(color: Option<&str>) -> [f32;4] {
+    match color {
+        Some(c) => {
+            println!("{}",c);
+            if COLOR.contains_key(c) {
+                COLOR[c]
+            } else {
+                match Some(hex(c)) {
+                    Some(res) => res,
+                    _ => {
+                        println!("Error while parsing HEX value. Going black");
+                        COLOR["black"]
+                    }
+                }
+            }
+        },
+        _ => COLOR["black"],
+    }
+}
 
+//TODO add width and height
 fn main() -> std::io::Result<()> {
     let cell_size = CELL_SIZE.to_string();
-    let args = App::new("Rust.GoL")
+    let input = App::new("Rust.GoL")
                     .version_short("v")
                     .version(VERSION)
                     .about("Rust GoL implementation")
@@ -24,8 +54,7 @@ fn main() -> std::io::Result<()> {
                         .value_name("FILE")
                         .required(true)
                         .help("A path to the map with patterns (can contain only '0' and '1')")
-                    )
-                    .arg(
+                    ).arg(
                         Arg::with_name("size")
                         .long("size")
                         .short("s")
@@ -33,27 +62,32 @@ fn main() -> std::io::Result<()> {
                         .value_name("SIZE")
                         .default_value(&cell_size)
                         .help("Sets cell size")
-                    );
-                    //TODO add width and height
-                    // .arg(
-                    //     Arg::with_name("width")
-                    //     .long("width")
-                    //     .short("w")
-                    //     .takes_value(true)
-                    //     .value_name("W")
-                    //     .default_value(&RESOLUTION[0].to_string())
-                    //     .help("Sets screen width")
-                    // ).arg(
-                    //     Arg::with_name("height")
-                    //     .long("height")
-                    //     .short("h")
-                    //     .takes_value(true)
-                    //     .value_name("H")
-                    //     .default_value(&RESOLUTION[1].to_string())
-                    //     .help("Sets screen height")
-                    // );
-    let input = args.get_matches();
-    let file  = input.value_of("file").expect("Please provide a path to the map file.\n(Use '-f')");
+                    ).arg(
+                        Arg::with_name("rainbow")
+                        .long("rainbow")
+                        .help("Makes everything ✨🌈")
+                    ).arg(
+                        Arg::with_name("color")
+                        .long("color")
+                        .short("c")
+                        .takes_value(true)
+                        .value_name("COLOR")
+                        .default_value("black")
+                        .help("Sets cell color. (Can be: black, red, blue, teal, white or HEX)")
+                    ).arg(
+                        Arg::with_name("background")
+                        .long("background")
+                        .short("bg")
+                        .takes_value(true)
+                        .value_name("BG")
+                        .default_value("black")
+                        .help("Sets background color. (Can be: black, red, blue, teal, white or HEX)")
+                    )
+                    .get_matches();
+    let file    = input.value_of("file").expect("Please provide a path to the map file.\n(Use '-f str')");
+    let rainbow = input.is_present("rainbow");
+    let color   = parse_color(input.value_of("color"));
+    let bg_clr  = parse_color(input.value_of("background"));
     let c_size= match input.value_of("size") {
         Some(size) => {
             let size = size.parse::<u64>();
@@ -65,6 +99,6 @@ fn main() -> std::io::Result<()> {
         },
         _ => CELL_SIZE
     };
-    play(file, c_size, [640, 480])?;
+    play(file, c_size, color, bg_clr, [640, 480], rainbow)?;
     Ok(())
 }
