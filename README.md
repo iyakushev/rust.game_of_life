@@ -8,6 +8,21 @@
 1. `cargo build --release`.
 2. `./target/release/game_of_life -f FILENAME`
 
-<b>N.B!</b> pattern files can contain only 0 and 1.
+## A list of arguments:
+```shell
+USAGE:
+    game_of_life [FLAGS] [OPTIONS] --file <FILE>
+
+FLAGS:
+    -h, --help       Prints help information
+        --rainbow    Makes everything ✨🌈
+    -v, --version    Prints version information
+
+OPTIONS:
+    -b, --background <BG>    Sets background color. (Can be: black, red, blue, teal, white or HEX) [default: black]
+    -c, --color <COLOR>      Sets cell color. (Can be: black, red, blue, teal, white or HEX) [default: black]
+    -f, --file <FILE>        A path to the map with patterns (can contain only '0' and '1')
+    -s, --size <SIZE>        Sets cell size [default: 1]
+```
 
 Rendering is done with the [Piston](https://github.com/PistonDevelopers/piston).

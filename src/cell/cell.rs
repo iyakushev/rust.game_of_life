@@ -14,10 +14,6 @@ pub struct CELL {
     pos_y: u32
 }
 
-pub trait Check {
-    fn check(&mut self, cells: &HashSet<CELL>, looped_borders: bool, is_child: bool) -> Vec<CELL>;
-}
-
 impl CELL {
     pub fn new(status: STATUS, pos_x: u32, pos_y: u32) -> Self {
         CELL {
