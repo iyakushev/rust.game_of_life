@@ -9,7 +9,7 @@ use piston_window::color::hex;
 
 // --------------------==CONSTANTS==-------------------- \\
 // const RESOLUTION: [u32;2] = [320,240];
-const VERSION:    &str    = "v0.1";
+const VERSION:    &str    = "v0.3";
 const CELL_SIZE:  u64     = 1;
 const COLOR: phf::Map<&'static str, [f32;4]> = phf_map!{
         "black" => [0.0,0.0,0.0,1.0],

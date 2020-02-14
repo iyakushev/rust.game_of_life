@@ -4,11 +4,14 @@
 <h1 align="center">GAME OF LIFE IN RUST</h1>
 <p align="center"> Yet another implementation of Conway's "Game of Life", but now in Rust.</p>
 
-![](new.gif)
+
+This implementation tries to save a bit on the memory and instead of implementing bit maps it only stores cells that are alive.
+
+<img align="center" src="new.gif"/>
 
 ## To run:
 1. `cargo build --release`.
-2. `./target/release/game_of_life -f FILENAME`
+2. `./target/release/game_of_life [FLAGS] [OPTIONS] --file <FILE>`
 
 ## A list of arguments:
 ```shell
@@ -16,6 +19,7 @@ USAGE:
     game_of_life [FLAGS] [OPTIONS] --file <FILE>
 
 FLAGS:
+        --breathe    Does a 'breathing' effect between two colors (color and 1-color)
     -h, --help       Prints help information
         --rainbow    Makes everything ✨🌈
     -v, --version    Prints version information
