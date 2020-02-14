@@ -6,7 +6,7 @@
 
 
 This implementation tries to save a bit on the memory and instead of implementing bit maps it only stores cells that are alive.
-
+-
 <img align="center" src="new.gif"/>
 
 ## To run:
