@@ -22,7 +22,6 @@ const COLOR: phf::Map<&'static str, [f32;4]> = phf_map!{
 fn parse_color(color: Option<&str>) -> [f32;4] {
     match color {
         Some(c) => {
-            println!("{}",c);
             if COLOR.contains_key(c) {
                 COLOR[c]
             } else {
@@ -67,6 +66,10 @@ fn main() -> std::io::Result<()> {
                         .long("rainbow")
                         .help("Makes everything ✨🌈")
                     ).arg(
+                        Arg::with_name("breathe")
+                        .long("breathe")
+                        .help("Does a 'breathing' effect between two colors (color and 1-color)")
+                    ).arg(
                         Arg::with_name("color")
                         .long("color")
                         .short("c")
@@ -86,6 +89,7 @@ fn main() -> std::io::Result<()> {
                     .get_matches();
     let file    = input.value_of("file").expect("Please provide a path to the map file.\n(Use '-f str')");
     let rainbow = input.is_present("rainbow");
+    let breathe = input.is_present("breathe");
     let color   = parse_color(input.value_of("color"));
     let bg_clr  = parse_color(input.value_of("background"));
     let c_size= match input.value_of("size") {
@@ -99,6 +103,6 @@ fn main() -> std::io::Result<()> {
         },
         _ => CELL_SIZE
     };
-    play(file, c_size, color, bg_clr, [640, 480], rainbow)?;
+    play(file, c_size, color, bg_clr, [640, 480], rainbow, breathe)?;
     Ok(())
 }

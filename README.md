@@ -4,6 +4,8 @@
 <h1 align="center">GAME OF LIFE IN RUST</h1>
 <p align="center"> Yet another implementation of Conway's "Game of Life", but now in Rust.</p>
 
+![](new.gif)
+
 ## To run:
 1. `cargo build --release`.
 2. `./target/release/game_of_life -f FILENAME`
@@ -25,4 +27,5 @@ OPTIONS:
     -s, --size <SIZE>        Sets cell size [default: 1]
 ```
 
-Rendering is done with the [Piston](https://github.com/PistonDevelopers/piston).
+Rendering is done with the [Piston](https://github.com/PistonDevelopers/piston).   
+CMD args is done with the [Clap]().     
