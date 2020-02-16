@@ -49,6 +49,10 @@ impl GAMEFIELD {
     //     self.cells.retain(|cell| *cell.get_status()==STATUS::ALIVE)
     // }
 
+    pub fn random_field(&mut self) {
+        
+    }
+
     pub fn read_file(&mut self, filename: String) -> std::io::Result<()> {
         let f = fs::File::open(filename)?;
         let mut pos_y = self.c_height;

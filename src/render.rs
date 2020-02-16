@@ -10,15 +10,13 @@ fn opposite_color(mut color: [f32;4]) -> [f32;4] {
     color
 }
 
-fn breathe(color: [f32;4], n: u32) -> Vec<[f32;4]> {
-    let mut res = linear_gradient(color, opposite_color(color), n);
-    res.append(&mut linear_gradient(opposite_color(color), color, n));
+fn breathe(color: [f32;4], n: usize) -> Vec<[f32;4]> {
+    let res = linear_gradient(color, opposite_color(color), n);
     res
 }
 
-
 /// Calculates a linear color interpolation for n steps
-fn linear_gradient(color_source: [f32;4], color_destination: [f32;4], n: u32) -> Vec<[f32;4]>{
+fn linear_gradient(color_source: [f32;4], color_destination: [f32;4], n: usize) -> Vec<[f32;4]>{
     let mut result = Vec::new();
     result.push(color_source);
     for t in 1..n {
@@ -32,40 +30,44 @@ fn linear_gradient(color_source: [f32;4], color_destination: [f32;4], n: u32) ->
 }
 
 // TODO
-fn polylinear_gradient(colors: Vec<[f32;4]>) {
-    // let mut result = linear_gradient();
+fn polylinear_gradient(n: usize) -> Vec<[f32;4]> {
+    let mut result = Vec::from(linear_gradient([1.0,0.0,0.0,1.0],[1.0,1.0,0.0,1.0],n));
+    result.extend(linear_gradient([1.0,1.0,0.0,1.0],[0.0,1.0,0.0,1.0],n));
+    result.extend(linear_gradient([0.0,1.0,0.0,1.0],[0.0,1.0,1.0,1.0],n));
+    result.extend(linear_gradient([0.0,1.0,1.0,1.0],[0.0,0.0,1.0,1.0],n));
+    result
 }
-
-
 
 // TODO Scaling
 // TODO GGEZ port
 pub fn play(filename: &str, 
-            cell_size: u64, 
+            cell_size: usize, 
             color: [f32;4], 
             bg: [f32;4], 
             dimensions: [u32; 2], 
-            rainbow: bool, breathing: bool) -> std::io::Result<()> {
+            rainbow: bool, 
+            breathing: bool,
+            interpolation: usize) -> std::io::Result<()> {
     let mut gf = GAMEFIELD::new(dimensions);
     gf.read_file(filename.to_string())?;
     let mut run = false;
 
     let cell_color = match rainbow {
         true  => {
-            linear_gradient(color, opposite_color(color), 500)
+            polylinear_gradient(interpolation)
         },
         false => match breathing {
             true  => {
-                breathe(color, 500)
+                breathe(color, interpolation)
             },
             false => vec![color]
         }
     };
-
+    let mut color_inc = true; // switches the direction of color interpolation 
     let mut window: PistonWindow = WindowSettings::new("RGOL", dimensions).exit_on_esc(true).build().unwrap();
-    let mut cell_color_iter = cell_color.iter().cycle();
+    let cell_ceiling: usize = cell_color.len();
     // Event loop
-    let mut new_color = *cell_color_iter.next().unwrap();
+    let mut i: usize = 0;
     while let Some(event) = window.next() {
         if let Some(e) = event.press_args() { // Event handler for user input
             match e {
@@ -77,7 +79,7 @@ pub fn play(filename: &str,
         window.draw_2d(&event, |context, graphics, _device| {
             clear(bg, graphics);
             for cell in gf.get_cells() { // drawing cells
-                rectangle(new_color,
+                rectangle(cell_color[i],
                           [cell.get_x() as f64,
                            cell.get_y() as f64,
                            cell_size as f64,
@@ -89,7 +91,16 @@ pub fn play(filename: &str,
 
         if run { // Iterating cell automata
             gf.next_generation();
-            new_color = *cell_color_iter.next().unwrap();
+            match color_inc {
+                true => {
+                    if i >= cell_ceiling-1 {color_inc = false;}
+                    else {i+=1}
+                },
+                false => {
+                    if i <= 1 {color_inc = true;}
+                    else {i-=1}
+                }
+            }
         }
     }
     Ok(())
