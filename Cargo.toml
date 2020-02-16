@@ -10,3 +10,4 @@ edition = "2018"
 piston_window = "0.107.0"
 clap = "2.33.0"
 phf = { version = "0.8", features = ["macros"] }
+rand = "0.7.3"

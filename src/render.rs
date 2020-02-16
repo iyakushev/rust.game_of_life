@@ -44,13 +44,16 @@ pub fn play(filename: &str,
             cell_size: usize, 
             color: [f32;4], 
             bg: [f32;4], 
-            dimensions: [u32; 2], 
+            dimensions: [u32; 2],
+            random: bool,
             rainbow: bool, 
             breathing: bool,
             interpolation: usize) -> std::io::Result<()> {
+    
     let mut gf = GAMEFIELD::new(dimensions);
-    gf.read_file(filename.to_string())?;
-    let mut run = false;
+    if random {gf.random_field();}
+    else {gf.read_file(filename.to_string())?;}
+    
 
     let cell_color = match rainbow {
         true  => {
@@ -63,9 +66,13 @@ pub fn play(filename: &str,
             false => vec![color]
         }
     };
+    let mut run = false;
     let mut color_inc = true; // switches the direction of color interpolation 
+
+
     let mut window: PistonWindow = WindowSettings::new("RGOL", dimensions).exit_on_esc(true).build().unwrap();
     let cell_ceiling: usize = cell_color.len();
+    
     // Event loop
     let mut i: usize = 0;
     while let Some(event) = window.next() {

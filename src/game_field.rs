@@ -1,3 +1,5 @@
+extern crate rand;
+
 pub use crate::cell::{CELL, STATUS};
 use std::collections::HashSet;
 use std::string::String;
@@ -50,7 +52,19 @@ impl GAMEFIELD {
     // }
 
     pub fn random_field(&mut self) {
-        
+        let mut cx = 0;
+        for x in 0..self.width {
+            for y in 0..self.height {
+                let status: STATUS = rand::random();
+                if status == STATUS::DEAD {cx+=1}
+                else {
+                    self.cells.insert(CELL::new(status, x, y));
+                }
+            }
+        }
+        println!("Dead  cells = {}", cx);
+        println!("Alive cells = {}", self.cells.len());
+        println!("-----------\nTotal: {}", self.width*self.height);
     }
 
     pub fn read_file(&mut self, filename: String) -> std::io::Result<()> {

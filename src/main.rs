@@ -43,7 +43,6 @@ fn parse_value(val: Option<&str>, default: usize) -> usize {
     match val {
         Some(v) => {
             let v = v.parse::<usize>();
-            println!("RESULT::{:?}",v);
             if let Ok(v_) = v {
                 v_
             } else {
@@ -68,7 +67,7 @@ fn main() -> std::io::Result<()> {
                         .short("f")
                         .takes_value(true)
                         .value_name("FILE")
-                        .required(true)
+                        .required_unless("random")
                         .help("A path to the map with patterns (can contain only '0' and '1')")
                     ).arg(
                         Arg::with_name("size")
@@ -82,6 +81,10 @@ fn main() -> std::io::Result<()> {
                         Arg::with_name("rainbow")
                         .long("rainbow")
                         .help("Makes everything ✨🌈")
+                    ).arg(
+                        Arg::with_name("random")
+                        .long("random")
+                        .help("Generates random patterns across the field")
                     ).arg(
                         Arg::with_name("interpolation")
                         .long("interpolation")
@@ -112,13 +115,17 @@ fn main() -> std::io::Result<()> {
                         .help("Sets background color. (Can be: black, red, blue, teal, white or HEX)")
                     )
                     .get_matches();
-    let file    = input.value_of("file").expect("Please provide a path to the map file.\n(Use '-f str')");
     let breathe = input.is_present("breathe");
     let rainbow = input.is_present("rainbow");
+    let random  = input.is_present("random");
+    let mut file= "";
+    if !random {
+        file    = input.value_of("file").expect("Please provide a path to the map file.\n(Use '-f str')");
+    }
     let color   = parse_color(input.value_of("color"));
     let bg_clr  = parse_color(input.value_of("background"));
     let c_size  = parse_value(input.value_of("size"), CELL_SIZE);
     let grad_int= parse_value(input.value_of("interpolation"), GRADIENT_INT);
-    play(file, c_size, color, bg_clr, [640, 480], rainbow, breathe, grad_int)?;
+    play(file, c_size, color, bg_clr, [640, 480], random, rainbow, breathe, grad_int)?;
     Ok(())
 }

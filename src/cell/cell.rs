@@ -1,10 +1,23 @@
+extern crate rand;
+
 use std::collections::HashSet;
+use rand::{Rng, distributions::{Distribution, Standard}};
 
 #[derive(Copy,Clone,Debug,Eq,Hash,PartialEq)]
 pub enum STATUS {
     ALIVE = 49,
     DEAD  = 48,
 }
+
+impl Distribution<STATUS> for Standard {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> STATUS {
+        match rng.gen_range(0, 2) {
+            0 => STATUS::DEAD,
+            _ => STATUS::ALIVE,
+        }
+    }
+}
+
 
 #[repr(C)]
 #[derive(Copy,Clone,Hash,Eq,PartialEq,Debug)]
