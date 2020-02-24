@@ -23,12 +23,12 @@ impl Distribution<STATUS> for Standard {
 #[derive(Copy,Clone,Hash,Eq,PartialEq,Debug)]
 pub struct CELL {
     status: STATUS,
-    pos_x: u32,
-    pos_y: u32
+    pos_x: i32,
+    pos_y: i32
 }
 
 impl CELL {
-    pub fn new(status: STATUS, pos_x: u32, pos_y: u32) -> Self {
+    pub fn new(status: STATUS, pos_x: i32, pos_y: i32) -> Self {
         CELL {
             status: status,
             pos_x: pos_x,
@@ -40,7 +40,7 @@ impl CELL {
         self.status = STATUS::DEAD;
     }
 
-    fn get_range(&self, position: u32, dimension: u32) -> [u32;3] {
+    fn get_range(&self, position: i32, dimension: i32) -> [i32;3] {
         if position == 0 {
             [dimension, 0, 1]
         }
@@ -52,7 +52,7 @@ impl CELL {
         }
     }
 
-    pub fn check(&mut self, cells: &HashSet<CELL>, dimensions: (u32, u32), is_child: bool) -> Vec<CELL> {
+    pub fn check(&mut self, cells: &HashSet<CELL>, dimensions: (i32, i32), is_child: bool) -> Vec<CELL> {
         let mut cx: u8 = 0;
         let mut new_cells = Vec::new();
 
@@ -90,15 +90,15 @@ impl CELL {
         new_cells
     }
 
-    pub fn get_pos(&self) -> (u32,u32) {
+    pub fn get_pos(&self) -> (i32,i32) {
         (self.pos_x, self.pos_y)
     }
 
-    pub fn get_x(&self) -> u32 {
+    pub fn get_x(&self) -> i32 {
         self.pos_x
     }
 
-    pub fn get_y(&self) -> u32 {
+    pub fn get_y(&self) -> i32 {
         self.pos_y
     }
 

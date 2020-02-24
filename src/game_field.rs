@@ -9,14 +9,14 @@ use std::fs;
 #[derive(Debug)]
 pub struct GAMEFIELD {
     cells: HashSet<CELL>,
-    width: u32,
-    height: u32,
-    c_width: u32,
-    c_height: u32
+    width: i32,
+    height: i32,
+    c_width: i32,
+    c_height: i32
 }
 
 impl GAMEFIELD {
-    pub fn new(dimensions: [u32;2]) -> Self {
+    pub fn new(dimensions: [i32;2]) -> Self {
         GAMEFIELD {
             cells: HashSet::new(),
             width: dimensions[0],
@@ -46,10 +46,6 @@ impl GAMEFIELD {
         }
         self.cells = next_gen;
     }
-
-    // pub fn scavenge_dead_cells(&mut self) {
-    //     self.cells.retain(|cell| *cell.get_status()==STATUS::ALIVE)
-    // }
 
     pub fn random_field(&mut self) {
         let mut cx = 0;

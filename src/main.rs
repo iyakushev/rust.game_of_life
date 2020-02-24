@@ -2,25 +2,56 @@ mod cell;
 mod game_field;
 mod render;
 
+extern crate num;
+
+use num::Num;
+use std::str::FromStr;
 use clap::{Arg, App};
+use std::ops::{Add, Sub};
 use render::play;
 use phf::{phf_map};
-use piston_window::color::hex;
 
 // --------------------==CONSTANTS==-------------------- \\
-// const RESOLUTION: [u32;2] = [320,240];
-const VERSION:    &str    = "v0.3";
-const CELL_SIZE:  usize   = 1;
+const RESOLUTION: [u32;2] = [640,480];
+const VERSION:    &str    = "v0.4s";
+const CELL_SIZE:  u32     = 1;
 const GRADIENT_INT: usize = 500;
-const COLOR: phf::Map<&'static str, [f32;4]> = phf_map!{
-        "black" => [0.0,0.0,0.0,1.0],
-        "red" => [1.0,0.0,0.0,1.0],
-        "blue" => [0.0,1.0,0.0,1.0],
-        "teal" => [0.0,0.5,0.5,1.0],
-        "white" => [1.0; 4]
+const COLOR: phf::Map<&'static str, [u8; 4]> = phf_map!{
+        "black" => [0,0,0,255],
+        "red"   => [255,0,0,255],
+        "blue"  => [0,255,0,255],
+        "teal"  => [0,128,128,255],
+        "white" => [255,255,255,255]
 };
 
-fn parse_color(color: Option<&str>) -> [f32;4] {
+/// Converts from hexadecimal color format
+// pub fn hex(hex: &str) -> Color {
+
+//     for ch in hex.chars() {
+//         match ch {
+//             "#" => (),
+
+//         }
+//     }
+
+
+//     let color = match a {
+//         None => [rgb[0], rgb[1], rgb[2], 255],
+//         Some(a) => [rgb[0], rgb[1], rgb[2], a]
+//     };
+//     (
+//         color[0] as f32 * inv_255,
+//         color[1] as f32 * inv_255,
+//         color[2] as f32 * inv_255,
+//         color[3] as f32 * inv_255
+//     )
+// }
+
+fn hex(hex: &str) -> [u8;4] {
+    COLOR["black"]
+}
+
+fn parse_color(color: Option<&str>) -> [u8;4] {
     match color {
         Some(c) => {
             if COLOR.contains_key(c) {
@@ -39,10 +70,10 @@ fn parse_color(color: Option<&str>) -> [f32;4] {
     }
 }
 
-fn parse_value(val: Option<&str>, default: usize) -> usize {
+fn parse_value<T: FromStr, Num>(val: Option<&str>, default: T) -> T {
     match val {
         Some(v) => {
-            let v = v.parse::<usize>();
+            let v = v.parse::<T>();
             if let Ok(v_) = v {
                 v_
             } else {
