@@ -9,14 +9,15 @@ use std::fs;
 #[derive(Debug)]
 pub struct GAMEFIELD {
     cells: HashSet<CELL>,
-    width: i32,
-    height: i32,
-    c_width: i32,
-    c_height: i32
+    width: u32,
+    height: u32,
+    c_width: u32,
+    c_height: u32
 }
 
+//TODO store cell size and redo checks with it
 impl GAMEFIELD {
-    pub fn new(dimensions: [i32;2]) -> Self {
+    pub fn new(dimensions: [u32;2]) -> Self {
         GAMEFIELD {
             cells: HashSet::new(),
             width: dimensions[0],
@@ -36,7 +37,7 @@ impl GAMEFIELD {
         let prev_gen = self.cells.clone(); // Snapshot of the current generation
         let mut next_gen: HashSet<CELL> = HashSet::new();
         for mut cell in self.cells.drain() {
-            for c in cell.check(&prev_gen, (self.width, self.height), false).drain(..) {
+            for c in cell.check(&prev_gen, (self.width as i32, self.height as i32), false).drain(..) {
                 next_gen.insert(c);
             }
             match cell.get_status() {
@@ -49,8 +50,8 @@ impl GAMEFIELD {
 
     pub fn random_field(&mut self) {
         let mut cx = 0;
-        for x in 0..self.width {
-            for y in 0..self.height {
+        for x in 0..self.width as i32 {
+            for y in 0..self.height as i32 {
                 let status: STATUS = rand::random();
                 if status == STATUS::DEAD {cx+=1}
                 else {
@@ -65,12 +66,12 @@ impl GAMEFIELD {
 
     pub fn read_file(&mut self, filename: String) -> std::io::Result<()> {
         let f = fs::File::open(filename)?;
-        let mut pos_y = self.c_height;
-        let mut pos_x = self.c_width;
+        let mut pos_y = self.c_height as i32;
+        let mut pos_x = self.c_width as i32;
 
         for byte in f.bytes() {
             match byte.unwrap() {
-                10 => {pos_y += 1; pos_x = self.c_width}, // New line
+                10 => {pos_y += 1; pos_x = self.c_width as i32}, // New line
                 48 => pos_x += 1,              // Does not store dead cells
                 49 => {
                     self.cells.insert(CELL::new(STATUS::ALIVE, pos_x, pos_y));

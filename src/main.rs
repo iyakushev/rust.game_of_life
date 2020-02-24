@@ -2,20 +2,16 @@ mod cell;
 mod game_field;
 mod render;
 
-extern crate num;
-
-use num::Num;
-use std::str::FromStr;
 use clap::{Arg, App};
-use std::ops::{Add, Sub};
 use render::play;
 use phf::{phf_map};
 
 // --------------------==CONSTANTS==-------------------- \\
-const RESOLUTION: [u32;2] = [640,480];
-const VERSION:    &str    = "v0.4s";
-const CELL_SIZE:  u32     = 1;
-const GRADIENT_INT: usize = 500;
+const RESOLUTION:  [u32;2] = [640,480];
+const VERSION:     &str    = "v0.4s";
+const CELL_SIZE:    u32    = 1;
+const GRADIENT_INT: u32    = 500;
+const FPS_LIMIT:    u32    = 100;
 const COLOR: phf::Map<&'static str, [u8; 4]> = phf_map!{
         "black" => [0,0,0,255],
         "red"   => [255,0,0,255],
@@ -24,6 +20,7 @@ const COLOR: phf::Map<&'static str, [u8; 4]> = phf_map!{
         "white" => [255,255,255,255]
 };
 
+//TODO Hex pase
 /// Converts from hexadecimal color format
 // pub fn hex(hex: &str) -> Color {
 
@@ -70,10 +67,10 @@ fn parse_color(color: Option<&str>) -> [u8;4] {
     }
 }
 
-fn parse_value<T: FromStr, Num>(val: Option<&str>, default: T) -> T {
+fn parse_value(val: Option<&str>, default: u32) -> u32 {
     match val {
         Some(v) => {
-            let v = v.parse::<T>();
+            let v = v.parse::<u32>();
             if let Ok(v_) = v {
                 v_
             } else {
@@ -85,9 +82,10 @@ fn parse_value<T: FromStr, Num>(val: Option<&str>, default: T) -> T {
 }
 
 //TODO add width and height
-fn main() -> std::io::Result<()> {
+fn main() -> Result<(), String> {
     let cell_size = CELL_SIZE.to_string();
     let grad_int  = GRADIENT_INT.to_string();
+    let fps_lim   = FPS_LIMIT.to_string();
     let input = App::new("Rust.GoL")
                     .version_short("v")
                     .version(VERSION)
@@ -125,6 +123,14 @@ fn main() -> std::io::Result<()> {
                         .default_value(&grad_int)
                         .help("Gradient interpolation steps")
                     ).arg(
+                        Arg::with_name("fps")
+                        .long("frame-limit")
+                        .short("fps")
+                        .takes_value(true)
+                        .value_name("FPS_LIMIT")
+                        .default_value(&fps_lim)
+                        .help("Puts a lock on a frame rate.")
+                    ).arg(
                         Arg::with_name("breathe")
                         .long("breathe")
                         .help("Does a 'breathing' effect between two colors (color and 255-color)")
@@ -156,7 +162,8 @@ fn main() -> std::io::Result<()> {
     let color   = parse_color(input.value_of("color"));
     let bg_clr  = parse_color(input.value_of("background"));
     let c_size  = parse_value(input.value_of("size"), CELL_SIZE);
+    let fps_lim = parse_value(input.value_of("fps"), FPS_LIMIT);
     let grad_int= parse_value(input.value_of("interpolation"), GRADIENT_INT);
-    play(file, c_size, color, bg_clr, [640, 480], random, rainbow, breathe, grad_int)?;
+    play(file, c_size, color, bg_clr, RESOLUTION, random, rainbow, breathe, grad_int, fps_lim)?;
     Ok(())
 }
