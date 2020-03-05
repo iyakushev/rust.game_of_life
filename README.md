@@ -19,16 +19,23 @@ USAGE:
     game_of_life [FLAGS] [OPTIONS] --file <FILE>
 
 FLAGS:
-        --breathe    Does a 'breathing' effect between two colors (color and 1-color)
+        --breathe    Does a 'breathing' effect between two colors (color and 255-color)
     -h, --help       Prints help information
         --rainbow    Makes everything ✨🌈
+        --random     Generates random patterns across the field
     -v, --version    Prints version information
 
 OPTIONS:
-    -b, --background <BG>    Sets background color. (Can be: black, red, blue, teal, white or HEX) [default: black]
-    -c, --color <COLOR>      Sets cell color. (Can be: black, red, blue, teal, white or HEX) [default: black]
-    -f, --file <FILE>        A path to the map with patterns (can contain only '0' and '1')
-    -s, --size <SIZE>        Sets cell size [default: 1]
+    -b, --background <BG>
+            Sets background color. (Can be: black, red, blue, teal, white or HEX) [default: black]
+
+    -c, --color <COLOR>
+            Sets cell color. (Can be: black, red, blue, teal, white or HEX) [default: white]
+
+    -f, --file <FILE>                            A path to the map with patterns (can contain only '0' and '1')
+    -f, --frame-limit <FPS_LIMIT>                Puts a lock on a frame rate. [default: 100]
+    -i, --interpolation <INTERPOLATION_STEPS>    Gradient interpolation steps [default: 500]
+    -s, --size <SIZE>                            Sets cell size [default: 1]
 ```
 
 Rendering is done with the [SDL2](https://github.com/Rust-SDL2/rust-sdl2).   
