@@ -31,5 +31,5 @@ OPTIONS:
     -s, --size <SIZE>        Sets cell size [default: 1]
 ```
 
-Rendering is done with the [Piston](https://github.com/PistonDevelopers/piston).   
+Rendering is done with the [SDL2](https://github.com/Rust-SDL2/rust-sdl2).   
 CMD args is done with the [Clap](https://github.com/clap-rs/clap).     
