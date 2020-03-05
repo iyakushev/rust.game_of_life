@@ -18,11 +18,10 @@ fn breathe(color: [u8;4], n: u32) -> Vec<(u8,u8,u8,u8)> {
 /// Calculates a linear color interpolation for n steps
 fn linear_gradient(color_source: [u8;4], color_destination: [u8;4], n: u32) -> Vec<(u8,u8,u8,u8)>{
     let mut result = Vec::<(u8,u8,u8,u8)>::new();
-    result.push((color_source[0],color_source[1],color_source[2],color_source[3]));
-    for t in 1..n {
+    for t in 0..n {
         let mut color = [0,0,0,255];
         for channel in 0..3 {
-            color[channel] = color_source[channel] + ((t as u8/(n-1)as u8) * (color_destination[channel] - color_source[channel]))
+            color[channel] = normailize_float(normailize_unsgn(color_source[channel]) + ((t as f32/(n-1) as f32) * (normailize_unsgn(color_destination[channel]) - normailize_unsgn(color_source[channel]))));
         }
         result.push((color[0],color[1],color[2],color[3]));
     }
@@ -35,6 +34,14 @@ fn polylinear_gradient(n: u32) -> Vec<(u8,u8,u8,u8)> {
     result.extend(linear_gradient([0,255,0,255],[0,255,255,255],n));
     result.extend(linear_gradient([0,255,255,255],[0,0,255,255],n));
     result
+}
+
+fn normailize_unsgn(num: u8) -> f32 {
+    num as f32 / 255.0
+}
+
+fn normailize_float(num: f32) -> u8 {
+    if num == 1.0 {255} else {(num*256.0) as u8}
 }
 
 pub fn play(filename: &str, 
@@ -98,9 +105,8 @@ pub fn play(filename: &str,
         canvas.clear();
 
 
-        canvas.set_draw_color(Color::from(cell_color[0]));
         for cell in gf.get_cells() { // drawing cells
-            // cell_color[i]
+            canvas.set_draw_color(Color::from(cell_color[i]));
             canvas.fill_rect(
                 Rect::new(
                     cell.get_x(), 
