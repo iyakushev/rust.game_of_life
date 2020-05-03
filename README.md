@@ -39,4 +39,4 @@ OPTIONS:
 ```
 
 Rendering is done with the [SDL2](https://github.com/Rust-SDL2/rust-sdl2).   
-CMD args is done with the [Clap](https://github.com/clap-rs/clap).     
+CMD args are done with the [Clap](https://github.com/clap-rs/clap).     
